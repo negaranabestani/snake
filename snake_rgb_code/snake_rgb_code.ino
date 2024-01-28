@@ -34,8 +34,7 @@ struct Apple{
 #define UP 2
 #define DOWN 3
 
-Snake snake = {{1,5},{{0,5}, {1,5}}, 2, {1,0}};//Initialize a snake object
-Apple apple = {(int)random(0,8),(int)random(0,8)};//Initialize an apple object
+
 
 //Variables To Handle The Game Time
 float oldTime = 0;
@@ -43,10 +42,13 @@ float timer = 0;
 float updateRate = 3;
 
 const uint8_t kMatrixWidth = 8;
-const uint8_t kMatrixHeight = 8;
+const uint8_t kMatrixHeight = 16;
 
 // Param for different pixel layouts
 const bool    kMatrixSerpentineLayout = false;
+
+Snake snake = {{1,5},{{0,5}, {1,5}}, 2, {1,0}};//Initialize a snake object
+Apple apple = {(int)random(0,kMatrixHeight),(int)random(0,kMatrixWidth)};//Initialize an apple object
 
 uint16_t XY( uint8_t x, uint8_t y)
 {
@@ -129,8 +131,8 @@ float calculateDeltaTime(){
 }
 
 void reset(){
-  for(i=0;i<8;i++){
-      for (j=0;j<8;j++){
+  for(i=0;i<kMatrixHeight;i++){
+      for (j=0;j<kMatrixWidth;j++){
         leds[ XY(j, i)]  = CHSV( 0, 0, 0);
       }
   }
@@ -141,14 +143,14 @@ void Update(){
   int newHead[2] = {snake.head[0]+snake.dir[0], snake.head[1]+snake.dir[1]};
 
   //Handle Borders
-  if(newHead[0]==8){
+  if(newHead[0]==kMatrixHeight){
     newHead[0]=0;
   }else if(newHead[0]==-1){
-    newHead[0] = 7;
-  }else if(newHead[1]==8){
+    newHead[0] = kMatrixHeight-1;
+  }else if(newHead[1]==kMatrixWidth){
     newHead[1]=0;
   }else if(newHead[1]==-1){
-    newHead[1]=7;
+    newHead[1]=kMatrixWidth-1;
   }
   
   //Check If The Snake hits itself
@@ -157,7 +159,7 @@ void Update(){
       //Pause the game for 1 sec then Reset it
       delay(1000);
       snake = {{1,5},{{0,5}, {1,5}}, 2, {1,0}};//Reinitialize the snake object
-      apple = {(int)random(0,8),(int)random(0,8)};//Reinitialize an apple object
+      apple = {(int)random(0,kMatrixHeight),(int)random(0,kMatrixWidth)};//Reinitialize an apple object
       return;
     }
   }
@@ -165,8 +167,8 @@ void Update(){
   //Check if The snake ate the apple
   if(newHead[0] == apple.rPos && newHead[1] ==apple.cPos){
     snake.len = snake.len+1;
-    apple.rPos = (int)random(0,8);
-    apple.cPos = (int)random(0,8);
+    apple.rPos = (int)random(0,kMatrixHeight);
+    apple.cPos = (int)random(0,kMatrixWidth);
   }else{
     removeFirst();//Shifting the array to the left
   }
@@ -178,12 +180,6 @@ void Update(){
   snake.head[1] = newHead[1];
   
   //Update the pic Array to Display(snake and apple)
-
-  for(i=0;i<8;i++){
-      for (j=0;j<8;j++){
-        leds[ XY(j, i)]  = CHSV( 0, 0, 0);
-      }
-  }
 
   int x,y;
   for(j=0;j<snake.len;j++){
