@@ -46,7 +46,7 @@ const uint8_t kMatrixWidth = 8;
 const uint8_t kMatrixHeight = 8;
 
 // Param for different pixel layouts
-const bool    kMatrixSerpentineLayout = true;
+const bool    kMatrixSerpentineLayout = false;
 
 uint16_t XY( uint8_t x, uint8_t y)
 {
@@ -188,15 +188,10 @@ void Update(){
   int x,y;
   for(j=0;j<snake.len;j++){
     int x = snake.body[j][1], y = snake.body[j][0];
-    if (y%2 ==1)
-      x = 7-x;
     leds[ XY(x, y)]  = CHSV( 255, 0, 255);
   }
-  if (apple.rPos %2 == 1) 
-    x = 7 - apple.cPos;
-  else 
-    x=apple.cPos;
-  leds[ XY(x, apple.rPos)]  = CHSV( 0, 255, 255);
+
+  leds[ XY(apple.cPos, apple.rPos)]  = CHSV( 0, 255, 255);
 
   FastLED.show();
   
